@@ -1,6 +1,6 @@
 ## Computing in Schools: Building Data Structures with OOP
 
-A big part of the A-level Computing syllabus has content on different data types. Arrays, stacks, queues, linked lists, graphs and tress to name a few. Another aspect of the syllabus is object orientated programming. In this post I aim to use an object oirentated approach to build some of these data structures from scratch. I will be using Python as a programming language. All data structures will be built up from the basic data structures that python contains, i.e., lists, strings and integers. I will also be adding in a few software engineeing practices such as unit testing, linting, using test runners,  and task runners. This post is not inteded to be a tutorial on Object Orientated Programming (OOP) or data structures. It is more an illustration of how OOP principles can be applied using structures that should be famiuliar to an A-level computing student. I have written a priliminary activity to this one using shapes as a concept.
+A big part of the A-level Computing syllabus has content on different data types. Arrays, stacks, queues, linked lists, graphs and trees to name a few. Another aspect of the syllabus is [object orientated programming](https://www.educative.io/blog/object-oriented-programming). In this post I aim to use an object oirentated approach to build some of these data structures from scratch. I will be using Python as a programming language. All data structures will be built up from the basic data structures that python contains, i.e., lists, strings and integers. I will also be adding in a few software engineeing practices such as [unit testing](https://realpython.com/python-testing/), [linting](https://sourcelevel.io/blog/what-is-a-linter-and-why-your-team-should-use-it), using [test runners](https://realpython.com/python-testing/),  and task runners. This post is not inteded to be a tutorial on Object Orientated Programming (OOP) or data structures. It is more an illustration of how OOP principles can be applied using structures that should be famiuliar to an A-level computing student. I have written a priliminary activity to this one using shapes as a concept.
 
 This is a summary of all that will be covered
 
@@ -12,31 +12,32 @@ This is a summary of all that will be covered
 - Writing tests using Unittest library
 - Using a test runner
 - Using a task runner
-- The concept of refactoring
+- The concept of [refactoring](https://www.techtarget.com/searchapparchitecture/definition/refactoring)
 - Linting
-- Code Coverage
+- [Code Coverage](https://www.atlassian.com/continuous-delivery/software-testing/code-coverage)
 
 All resources will be hosted on my Github page. There is a table at the bottom of this post detailing which files are needed for each section of the tutorial.
 
 ### 0. Setting up our environment
-A will be using a Linux based envirnment for much of this task. In school I would use pythonanywhere which gives us an IDE for editing python code and a bash shell for running the code and any tests etc. This is by far the easiest option and has the advantage of working whereever you have access to a web browser. If you are on windows you might consider using the windows subsystem for linux. 
+A will be using a Linux based envirnment for much of this task. In school I would use [pythonanywhere](https://www.pythonanywhere.com/) which gives us an IDE for editing python code and a bash shell for running the code and any tests etc. This is by far the easiest option and has the advantage of working wherever you have access to a web browser. If you are on windows you might consider using the windows subsystem for linux. 
 
 ### 1. Creating the basic array class
-We create the MyArray class with a constructor method (in python this is `__init__()`).  The constructor takes as input a number i (at the moment this is a one dimensional array) for the size of the array and a string that specifies the type as either an integer or a character. The constructor method sets the variables i and array_type and also creates an empty list to hold the array elemnets. The array is then populated with None values. We then run some tests by creating instances of the MyArray class to make sure thee are no errors.  
+We create the MyArray class with a constructor method (in python this is `__init__()`).  The constructor takes as input a number `given_i` (at the moment this is a one dimensional array) for the size of the array and a string `given_array_type` that specifies the type as either an 8 bit integer or a character. The constructor method sets the attributes 'i'and 'array_type' and also creates an empty list `array` to hold the array elements. The array is then populated with `None` values. We then run some tests by creating instances of the `MyArray` class to make sure there are no errors.  
 
 ```
 class MyArray:
-    def __init__(self, i, array_type):
+    def __init__(self, given_i, given_array_type):
         """Allowed types
              - int8: 8 bit unsigned integer 0 - 2^8 -1
              - char: a single character
         """
+        self.i = given_size
+        self.array_type = given_array_type
         self.array = []
-        self.i = i
-        self.array_type = array_type
 
-        for _ in range(i):
+        for _ in range(self.size):
             self.array.append(None)
+
 
 print("""
 Conduct Tests
@@ -44,20 +45,22 @@ ________________________________________________________________________
 """)
 print("Check we can create a class, there should be no errors")
 array_1 = MyArray(1,'int8')
-array_2 = MyArray(1,'char')
+array_2 = MyArray(5,'char')
 ```
 
 In the bash console run the command `python3 my_array_1.py` to test the code.
 
 In part 4 of this post the tests will be moved into a separate file and run separately.
 
+Note that I am going to use a naming convention whereby all variable names passed into a function will be prefixed with the word "given". For example `given_i` is passed to the constructor so it can create the attribute `i`. In practice I would probably just use the same name for both, but the exam mark schemes seem to prefer different names.
+
 ### 2. Add a method to check the type of the array
-We add a helper method called check_type. The method takes as input a value and then checks if this value is the same type as the array otherwise it returns False. The `isinstance()` function returns True if the value is of the specified type. Note that we have added a extra condition to check that an int8 type is of between 0 and 255 and a char type is of length 1. This method will be used later when we add values to the array.
+We add a helper method called check_type. The method takes as input a value and then checks if this value is the same type as the array otherwise it returns `False`. The `isinstance()` function returns `True` if the value is of the specified type. Note that we have added a extra condition to check that an int8 type is of between 0 and 255 and a char type is of length 1. This method will be used later when we add values to the array.
 
 ```
 def check_type(self, value):
         if self.array_type == 'int8':
-            return isinstance(value ,int) and 0 < value <= 255
+            return isinstance(value, int) and 0 < value <= 255
 
         elif self.array_type == 'char':
             return isinstance(value, str) and len(value) == 1
@@ -85,14 +88,14 @@ In order to populate our arrays we need to add an input method to the MyArray cl
 
 ```
 def input(self, values):
-        if len(values) != self.i:
+        if len(values) != self.size:
             return 'Incorrect data size'
 
         for value in values:
             if not self.check_type(value):
                 return 'Incorrect data type'
 
-        for index in range(self.i):
+        for index in range(self.self.size):
             self.array[index] = values[index]
 ```
 
